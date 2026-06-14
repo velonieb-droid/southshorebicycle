@@ -1254,5 +1254,693 @@
   });
 </script>
 
+<!-- ===== REPAIR REQUEST MODAL ===== -->
+<div id="repairModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="display:none;">
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal-sheet">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <p class="modal-eyebrow">South Shore Bicycle &amp; Fitness</p>
+        <h2 id="modalTitle">Tell us what's going on with your bike</h2>
+        <p class="modal-sub">We'll review your request and confirm within 24 hours.</p>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close repair request form">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="modal-progress" aria-hidden="true">
+      <div class="modal-progress-fill" id="modalProgressFill" style="width:33%"></div>
+    </div>
+
+    <form id="repairForm" novalidate>
+
+      <!-- STEP 1: Contact Info -->
+      <div class="modal-step" id="step1">
+        <p class="step-label">Step 1 of 3 — Your Contact Details</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name <span aria-hidden="true">*</span></label>
+            <input type="text" id="firstName" name="firstName" autocomplete="given-name" placeholder="e.g. Maria" required>
+            <span class="field-error" id="firstNameErr" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name <span aria-hidden="true">*</span></label>
+            <input type="text" id="lastName" name="lastName" autocomplete="family-name" placeholder="e.g. Santos" required>
+            <span class="field-error" id="lastNameErr" role="alert"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email Address <span aria-hidden="true">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" placeholder="you@email.com" required>
+            <span class="field-error" id="emailErr" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number <span aria-hidden="true">*</span></label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="(516) 000-0000" required>
+            <span class="field-error" id="phoneErr" role="alert"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="address">Home Address</label>
+          <input type="text" id="address" name="address" autocomplete="street-address" placeholder="123 Harbor Blvd, Hewlett, NY">
+          <span class="field-hint">Optional — needed only if you'd like pickup service.</span>
+        </div>
+        <div class="modal-nav">
+          <span></span>
+          <button type="button" class="btn btn-primary" id="toStep2">Next — Describe the Issue</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Bike Issue -->
+      <div class="modal-step" id="step2" style="display:none;">
+        <p class="step-label">Step 2 of 3 — What's the Issue?</p>
+        <div class="form-group">
+          <label>What best describes the problem? <span aria-hidden="true">*</span></label>
+          <div class="chip-group" id="issueChips" role="group" aria-label="Select issue type">
+            <button type="button" class="chip" data-val="Brakes">🛑 Brakes</button>
+            <button type="button" class="chip" data-val="Gears / Shifting">⚙️ Gears / Shifting</button>
+            <button type="button" class="chip" data-val="Flat Tyre">🔧 Flat Tyre</button>
+            <button type="button" class="chip" data-val="Chain / Drivetrain">🔗 Chain / Drivetrain</button>
+            <button type="button" class="chip" data-val="Wheels / Truing">🔄 Wheels / Truing</button>
+            <button type="button" class="chip" data-val="Handlebars / Stem">🚲 Handlebars / Stem</button>
+            <button type="button" class="chip" data-val="Frame Damage">⚠️ Frame Damage</button>
+            <button type="button" class="chip" data-val="E-Bike Issue">⚡ E-Bike Issue</button>
+            <button type="button" class="chip" data-val="Full Overhaul Needed">🛠️ Full Overhaul</button>
+            <button type="button" class="chip" data-val="Other">💬 Other</button>
+          </div>
+          <span class="field-error" id="issueChipErr" role="alert"></span>
+        </div>
+        <div class="form-group">
+          <label for="issueDetail">Tell us more about the issue <span aria-hidden="true">*</span></label>
+          <textarea id="issueDetail" name="issueDetail" rows="4" placeholder="e.g. My rear derailleur skips under load on gears 3–5, started after my last long ride..." required></textarea>
+          <span class="field-error" id="issueDetailErr" role="alert"></span>
+        </div>
+        <div class="form-group">
+          <label for="bikeType">Bike Type</label>
+          <select id="bikeType" name="bikeType">
+            <option value="">Select your bike type</option>
+            <option>Road bike</option>
+            <option>Mountain bike</option>
+            <option>Hybrid / City bike</option>
+            <option>Gravel bike</option>
+            <option>Triathlon / TT bike</option>
+            <option>E-bike</option>
+            <option>Kids bike</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="modal-nav">
+          <button type="button" class="btn btn-outline-navy" id="backToStep1">← Back</button>
+          <button type="button" class="btn btn-primary" id="toStep3">Next — Drop-off or Pickup</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Drop-off or Pickup -->
+      <div class="modal-step" id="step3" style="display:none;">
+        <p class="step-label">Step 3 of 3 — How do you want to bring your bike in?</p>
+
+        <div class="service-toggle" role="group" aria-label="Choose drop-off or pickup">
+          <button type="button" class="service-opt active" id="optDropoff" data-mode="dropoff">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <strong>I'll Drop It Off</strong>
+            <span>Bring your bike to our shop at 1311 Broadway, Hewlett</span>
+          </button>
+          <button type="button" class="service-opt" id="optPickup" data-mode="pickup">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8zM5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+            <strong>Schedule a Pickup</strong>
+            <span>We'll come to you — choose your date, time &amp; location</span>
+          </button>
+        </div>
+
+        <!-- Drop-off fields -->
+        <div id="dropoffFields" class="sub-fields">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dropDate">Preferred Drop-Off Date <span aria-hidden="true">*</span></label>
+              <input type="date" id="dropDate" name="dropDate">
+              <span class="field-error" id="dropDateErr" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label for="dropTime">Preferred Time</label>
+              <select id="dropTime" name="dropTime">
+                <option value="">Any time is fine</option>
+                <option>10:00 AM – 12:00 PM</option>
+                <option>12:00 PM – 2:00 PM</option>
+                <option>2:00 PM – 4:00 PM</option>
+                <option>4:00 PM – 6:00 PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="info-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            Walk-ins are welcome anytime — selecting a date just helps us prepare for your visit.
+          </div>
+        </div>
+
+        <!-- Pickup fields -->
+        <div id="pickupFields" class="sub-fields" style="display:none;">
+          <div class="form-group">
+            <label for="pickupLocation">Pickup Address <span aria-hidden="true">*</span></label>
+            <input type="text" id="pickupLocation" name="pickupLocation" placeholder="123 Your Street, Hewlett, NY">
+            <span class="field-error" id="pickupLocationErr" role="alert"></span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pickupDate">Pickup Date <span aria-hidden="true">*</span></label>
+              <input type="date" id="pickupDate" name="pickupDate">
+              <span class="field-error" id="pickupDateErr" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label for="pickupTime">Pickup Time Window <span aria-hidden="true">*</span></label>
+              <select id="pickupTime" name="pickupTime">
+                <option value="">Select a window</option>
+                <option>10:00 AM – 12:00 PM</option>
+                <option>12:00 PM – 2:00 PM</option>
+                <option>2:00 PM – 4:00 PM</option>
+                <option>4:00 PM – 6:00 PM</option>
+              </select>
+              <span class="field-error" id="pickupTimeErr" role="alert"></span>
+            </div>
+          </div>
+          <div class="info-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            Pickup service is available within 10 miles of Hewlett, NY. We'll confirm availability when we review your request.
+          </div>
+        </div>
+
+        <div class="modal-nav">
+          <button type="button" class="btn btn-outline-navy" id="backToStep2">← Back</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            Send My Repair Request
+          </button>
+        </div>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div class="modal-step modal-success" id="stepSuccess" style="display:none;">
+        <div class="success-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
+        </div>
+        <h3 id="successName">We've got your request!</h3>
+        <p>We'll review your details and get back to you within 24 hours to confirm your appointment. Keep an eye on your inbox.</p>
+        <div class="success-summary" id="successSummary"></div>
+        <button type="button" class="btn btn-primary" id="closeSuccess">Close</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<style>
+/* ===== MODAL OVERLAY ===== */
+#repairModal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+@media (min-width: 640px) {
+  #repairModal { align-items: center; }
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 28, 38, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-sheet {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  width: 100%;
+  max-width: 680px;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 48px rgba(28,58,75,0.22);
+  overscroll-behavior: contain;
+  animation: slideUp 0.3s ease;
+}
+@media (min-width: 640px) {
+  .modal-sheet {
+    border-radius: 20px;
+    max-height: 90vh;
+    animation: scaleIn 0.25s ease;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scale(0.96); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem 2rem 1rem;
+  border-bottom: 1px solid var(--sand-dark);
+}
+.modal-eyebrow {
+  color: var(--coral-dark);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.modal-header h2 {
+  font-size: clamp(1.2rem, 4vw, 1.55rem);
+  margin-bottom: 0.3rem;
+}
+.modal-sub { font-size: 0.9rem; color: var(--ink-soft); }
+
+.modal-close {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--sand);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--navy);
+  transition: background 0.15s ease;
+  margin-top: 4px;
+}
+.modal-close:hover, .modal-close:focus-visible { background: var(--sand-dark); }
+
+.modal-progress {
+  height: 4px;
+  background: var(--sand-dark);
+}
+.modal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--coral-dark), var(--coral));
+  transition: width 0.35s ease;
+}
+
+/* STEPS */
+.modal-step { padding: 1.75rem 2rem 2rem; }
+.step-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 1.25rem;
+}
+
+/* FORM ELEMENTS */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+@media (min-width: 520px) {
+  .form-row { grid-template-columns: 1fr 1fr; }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+.form-group:last-child { margin-bottom: 0; }
+
+label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+label span[aria-hidden] { color: var(--coral-dark); }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+select,
+textarea {
+  font-family: var(--body);
+  font-size: 0.96rem;
+  color: var(--ink);
+  background: var(--sand);
+  border: 2px solid var(--sand-dark);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  min-height: 44px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+textarea { resize: vertical; min-height: 110px; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6670' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(28,58,75,0.12);
+  background: #fff;
+}
+input.error, select.error, textarea.error {
+  border-color: #C0392B;
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
+}
+
+.field-error {
+  font-size: 0.82rem;
+  color: #C0392B;
+  font-weight: 600;
+  min-height: 1.1em;
+}
+.field-hint {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* CHIPS */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.chip {
+  font-family: var(--body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border-radius: 50px;
+  border: 2px solid var(--sand-dark);
+  background: var(--sand);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  min-height: 44px;
+}
+.chip:hover { border-color: var(--navy); transform: translateY(-1px); }
+.chip.selected {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+/* SERVICE TOGGLE (drop-off vs pickup) */
+.service-toggle {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+@media (min-width: 520px) {
+  .service-toggle { grid-template-columns: 1fr 1fr; }
+}
+
+.service-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 1.1rem 1.2rem;
+  border: 2px solid var(--sand-dark);
+  border-radius: 12px;
+  background: var(--sand);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--body);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  min-height: 44px;
+}
+.service-opt svg { color: var(--ink-soft); transition: color 0.15s ease; }
+.service-opt strong { font-size: 1rem; color: var(--navy); display: block; }
+.service-opt span { font-size: 0.84rem; color: var(--ink-soft); line-height: 1.4; }
+.service-opt:hover { border-color: var(--navy); }
+.service-opt.active {
+  border-color: var(--coral-dark);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(204,0,0,0.12);
+}
+.service-opt.active svg { color: var(--coral-dark); }
+
+.sub-fields { animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: rgba(127,184,164,0.15);
+  border-left: 3px solid var(--seafoam);
+  border-radius: 0 8px 8px 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin-top: 1rem;
+}
+.info-box svg { flex-shrink: 0; color: var(--seafoam); margin-top: 1px; }
+
+/* NAV BUTTONS */
+.modal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--sand-dark);
+}
+
+/* SUCCESS */
+.modal-success {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+.success-icon {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(127,184,164,0.18);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: #2E8B6E;
+}
+.modal-success h3 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+.modal-success p { max-width: 38ch; margin: 0 auto 1.5rem; font-size: 0.96rem; }
+.success-summary {
+  background: var(--sand);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.75rem;
+  display: grid;
+  gap: 0.4rem;
+}
+.success-summary strong { color: var(--navy); }
+</style>
+
+<script>
+// ===== REPAIR MODAL LOGIC =====
+(function() {
+  const modal     = document.getElementById('repairModal');
+  const backdrop  = document.getElementById('modalBackdrop');
+  const closeBtn  = document.getElementById('modalClose');
+  const progress  = document.getElementById('modalProgressFill');
+
+  // All trigger buttons
+  document.querySelectorAll('a[href="#visit"].btn-ghost-on-coral, a[href="#visit"].btn-ghost').forEach(btn => {
+    if (btn.textContent.trim().includes('Describe') || btn.textContent.trim().includes('Repair')) {
+      btn.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+    }
+  });
+
+  function openModal() {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setStep(1);
+    setTimeout(() => document.getElementById('firstName').focus(), 100);
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+  document.getElementById('closeSuccess').addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display !== 'none') closeModal();
+  });
+
+  // Step management
+  function setStep(n) {
+    ['step1','step2','step3','stepSuccess'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    if (n === 'success') {
+      document.getElementById('stepSuccess').style.display = 'block';
+      progress.style.width = '100%';
+    } else {
+      document.getElementById('step'+n).style.display = 'block';
+      progress.style.width = (n * 33.3) + '%';
+    }
+  }
+
+  // Set min date to today for all date inputs
+  const today = new Date().toISOString().split('T')[0];
+  ['dropDate','pickupDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.min = today;
+  });
+
+  // Issue chips (multi-select)
+  const selectedIssues = new Set();
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const val = chip.dataset.val;
+      chip.classList.toggle('selected');
+      if (chip.classList.contains('selected')) selectedIssues.add(val);
+      else selectedIssues.delete(val);
+    });
+  });
+
+  // Drop-off vs Pickup toggle
+  const optDropoff   = document.getElementById('optDropoff');
+  const optPickup    = document.getElementById('optPickup');
+  const dropoffFields = document.getElementById('dropoffFields');
+  const pickupFields  = document.getElementById('pickupFields');
+  let serviceMode = 'dropoff';
+
+  optDropoff.addEventListener('click', () => {
+    serviceMode = 'dropoff';
+    optDropoff.classList.add('active');
+    optPickup.classList.remove('active');
+    dropoffFields.style.display = 'block';
+    pickupFields.style.display = 'none';
+  });
+
+  optPickup.addEventListener('click', () => {
+    serviceMode = 'pickup';
+    optPickup.classList.add('active');
+    optDropoff.classList.remove('active');
+    pickupFields.style.display = 'block';
+    dropoffFields.style.display = 'none';
+  });
+
+  // Validation helpers
+  function showError(inputId, errId, msg) {
+    const el = document.getElementById(inputId);
+    const err = document.getElementById(errId);
+    el.classList.add('error');
+    err.textContent = msg;
+    return false;
+  }
+  function clearError(inputId, errId) {
+    const el = document.getElementById(inputId);
+    const err = document.getElementById(errId);
+    if (el) el.classList.remove('error');
+    if (err) err.textContent = '';
+  }
+
+  // Step 1 → 2
+  document.getElementById('toStep2').addEventListener('click', () => {
+    let valid = true;
+    ['firstName','lastName','email','phone'].forEach(f => clearError(f, f+'Err'));
+
+    if (!document.getElementById('firstName').value.trim()) valid = showError('firstName','firstNameErr','Please enter your first name.');
+    if (!document.getElementById('lastName').value.trim()) valid = showError('lastName','lastNameErr','Please enter your last name.');
+    const email = document.getElementById('email').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) valid = showError('email','emailErr','Enter a valid email address.');
+    const phone = document.getElementById('phone').value.trim();
+    if (!phone || phone.replace(/\D/g,'').length < 10) valid = showError('phone','phoneErr','Enter a valid 10-digit phone number.');
+
+    if (valid) setStep(2);
+  });
+
+  // Step 2 → 3
+  document.getElementById('toStep3').addEventListener('click', () => {
+    clearError('issueDetail','issueDetailErr');
+    document.getElementById('issueChipErr').textContent = '';
+    let valid = true;
+
+    if (selectedIssues.size === 0) {
+      document.getElementById('issueChipErr').textContent = 'Please select at least one issue type.';
+      valid = false;
+    }
+    if (!document.getElementById('issueDetail').value.trim()) {
+      valid = showError('issueDetail','issueDetailErr','Please describe the issue in a few words.');
+    }
+    if (valid) setStep(3);
+  });
+
+  // Back buttons
+  document.getElementById('backToStep1').addEventListener('click', () => setStep(1));
+  document.getElementById('backToStep2').addEventListener('click', () => setStep(2));
+
+  // Submit
+  document.getElementById('repairForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    if (serviceMode === 'dropoff') {
+      clearError('dropDate','dropDateErr');
+      if (!document.getElementById('dropDate').value) {
+        valid = showError('dropDate','dropDateErr','Please select a preferred drop-off date.');
+      }
+    } else {
+      ['pickupLocation','pickupDate','pickupTime'].forEach(f => clearError(f, f+'Err'));
+      if (!document.getElementById('pickupLocation').value.trim()) valid = showError('pickupLocation','pickupLocationErr','Please enter your pickup address.');
+      if (!document.getElementById('pickupDate').value) valid = showError('pickupDate','pickupDateErr','Please select a pickup date.');
+      if (!document.getElementById('pickupTime').value) valid = showError('pickupTime','pickupTimeErr','Please choose a pickup time window.');
+    }
+
+    if (!valid) return;
+
+    // Build confirmation summary
+    const name  = document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value;
+    const issues = [...selectedIssues].join(', ');
+    const mode  = serviceMode === 'dropoff' ? 'Drop-off at 1311 Broadway, Hewlett' : 'Pickup from ' + document.getElementById('pickupLocation').value;
+    const date  = serviceMode === 'dropoff' ? document.getElementById('dropDate').value : document.getElementById('pickupDate').value;
+    const time  = serviceMode === 'dropoff' ? (document.getElementById('dropTime').value || 'Flexible') : document.getElementById('pickupTime').value;
+
+    document.getElementById('successName').textContent = 'Got it, ' + document.getElementById('firstName').value + '!';
+    document.getElementById('successSummary').innerHTML = `
+      <div><strong>Name:</strong> ${name}</div>
+      <div><strong>Issue(s):</strong> ${issues}</div>
+      <div><strong>Service:</strong> ${mode}</div>
+      <div><strong>Date:</strong> ${date}</div>
+      <div><strong>Time:</strong> ${time}</div>
+    `;
+
+    setStep('success');
+  });
+})();
+</script>
+
 </body>
 </html>
