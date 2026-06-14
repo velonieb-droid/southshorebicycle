@@ -732,7 +732,7 @@
         <li><a href="#visit">Visit</a></li>
       </ul>
       <div class="nav-cta">
-        <a href="#visit" class="btn btn-primary">Book a Tune-Up</a>
+        <a href="#visit" class="btn btn-primary open-tuneup-modal">Book a Tune-Up</a>
       </div>
     </nav>
   </div>
@@ -751,7 +751,7 @@
         <h1>Get your bike <span>tuned, fixed, and ready</span> in one visit</h1>
         <p class="lead">Expert repairs, honest pricing, and a full range of bikes and fitness gear — all from a shop that actually rides what it sells.</p>
         <div class="hero-actions">
-          <a href="#visit" class="btn btn-primary">
+          <a href="#visit" class="btn btn-primary open-tuneup-modal">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             Book My Tune-Up
           </a>
@@ -880,7 +880,7 @@
           <div class="tracker-price">
             <div class="price" id="tierPrice">$49</div>
             <p class="price-note">Walk-ins welcome, most done same-day</p>
-            <a href="#visit" class="btn btn-primary" style="width:100%;">Book This Service</a>
+            <a href="#visit" class="btn btn-primary open-tuneup-modal" style="width:100%;" data-tier-source="tracker">Book This Service</a>
           </div>
         </div>
       </div>
@@ -950,7 +950,7 @@
         <h2>Ready for your bike to ride like new?</h2>
         <p>Drop in any day we're open — no appointment required for most tune-ups. Got something more specific going on? We can take a look at that too.</p>
         <div class="hero-actions" style="justify-content:center;">
-          <a href="#visit" class="btn btn-primary">Book My Tune-Up</a>
+          <a href="#visit" class="btn btn-primary open-tuneup-modal">Book My Tune-Up</a>
           <a href="#visit" class="btn btn-ghost-on-coral">Describe My Bike Issue</a>
         </div>
       </div>
@@ -1938,6 +1938,817 @@ input.error, select.error, textarea.error {
     `;
 
     setStep('success');
+  });
+})();
+</script>
+
+<!-- ===== TUNE-UP BOOKING MODAL ===== -->
+<div id="tuneupModal" role="dialog" aria-modal="true" aria-labelledby="tuneupModalTitle" style="display:none;">
+  <div class="modal-backdrop" id="tuneupBackdrop"></div>
+  <div class="modal-sheet" id="tuneupSheet">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <p class="modal-eyebrow">South Shore Bicycle &amp; Fitness</p>
+        <h2 id="tuneupModalTitle">Book Your Tune-Up</h2>
+        <p class="modal-sub">Reserve your spot — we'll confirm within a few hours.</p>
+      </div>
+      <button class="modal-close" id="tuneupClose" aria-label="Close tune-up booking">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Progress -->
+    <div class="modal-progress" aria-hidden="true">
+      <div class="modal-progress-fill" id="tuneupProgressFill" style="width:25%"></div>
+    </div>
+
+    <form id="tuneupForm" novalidate>
+
+      <!-- STEP 1: Choose Service Tier -->
+      <div class="modal-step" id="tstep1">
+        <p class="step-label">Step 1 of 4 — Choose Your Service</p>
+
+        <div class="tier-cards" role="group" aria-label="Select tune-up tier">
+          <button type="button" class="tier-card active" id="tierCard0" data-tier="0">
+            <div class="tier-card-top">
+              <div class="tier-badge">1</div>
+              <div class="tier-info">
+                <strong>Basic Tune-Up</strong>
+                <span>Quick checkup — ~45 min</span>
+              </div>
+              <div class="tier-price-tag">$49</div>
+            </div>
+            <ul class="tier-includes">
+              <li>Brake &amp; gear adjustment</li>
+              <li>Chain lube &amp; tension check</li>
+              <li>Tire pressure &amp; safety inspection</li>
+            </ul>
+          </button>
+          <button type="button" class="tier-card" id="tierCard1" data-tier="1">
+            <div class="tier-card-top">
+              <div class="tier-badge popular">2</div>
+              <div class="tier-info">
+                <strong>Standard Tune-Up</strong>
+                <span>Most popular — same day</span>
+              </div>
+              <div class="tier-price-tag">$89</div>
+            </div>
+            <ul class="tier-includes">
+              <li>Full brake, cable &amp; derailleur tune</li>
+              <li>Wheel truing &amp; bolt torque</li>
+              <li>Chain &amp; drivetrain inspection</li>
+            </ul>
+          </button>
+          <button type="button" class="tier-card" id="tierCard2" data-tier="2">
+            <div class="tier-card-top">
+              <div class="tier-badge">3</div>
+              <div class="tier-info">
+                <strong>Full Overhaul</strong>
+                <span>Complete rebuild</span>
+              </div>
+              <div class="tier-price-tag">$179</div>
+            </div>
+            <ul class="tier-includes">
+              <li>Full drivetrain strip &amp; degrease</li>
+              <li>Frame clean, polish &amp; inspect</li>
+              <li>Wheels trued, tires checked</li>
+            </ul>
+          </button>
+        </div>
+        <span class="field-error" id="tierCardErr" role="alert"></span>
+
+        <div class="modal-nav">
+          <span></span>
+          <button type="button" class="btn btn-primary" id="ttoStep2">Next — Your Details</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Contact Info -->
+      <div class="modal-step" id="tstep2" style="display:none;">
+        <p class="step-label">Step 2 of 4 — Your Contact Details</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tFirstName">First Name <span aria-hidden="true">*</span></label>
+            <input type="text" id="tFirstName" name="tFirstName" autocomplete="given-name" placeholder="Maria" required>
+            <span class="field-error" id="tFirstNameErr" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label for="tLastName">Last Name <span aria-hidden="true">*</span></label>
+            <input type="text" id="tLastName" name="tLastName" autocomplete="family-name" placeholder="Santos" required>
+            <span class="field-error" id="tLastNameErr" role="alert"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tEmail">Email Address <span aria-hidden="true">*</span></label>
+            <input type="email" id="tEmail" name="tEmail" autocomplete="email" placeholder="you@email.com" required>
+            <span class="field-error" id="tEmailErr" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label for="tPhone">Phone Number <span aria-hidden="true">*</span></label>
+            <input type="tel" id="tPhone" name="tPhone" autocomplete="tel" placeholder="(516) 000-0000" required>
+            <span class="field-error" id="tPhoneErr" role="alert"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="tBikeType">Bike Type</label>
+          <select id="tBikeType" name="tBikeType">
+            <option value="">Select your bike type (optional)</option>
+            <option>Road bike</option>
+            <option>Mountain bike</option>
+            <option>Hybrid / City bike</option>
+            <option>Gravel bike</option>
+            <option>Triathlon / TT bike</option>
+            <option>E-bike</option>
+            <option>Kids bike</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tNotes">Any notes for our mechanic? <span style="font-weight:400;color:var(--ink-soft)">(optional)</span></label>
+          <textarea id="tNotes" name="tNotes" rows="3" placeholder="e.g. rear shifting feels sluggish, last tuned 6 months ago..."></textarea>
+        </div>
+        <div class="modal-nav">
+          <button type="button" class="btn btn-outline-navy" id="tbackToStep1">← Back</button>
+          <button type="button" class="btn btn-primary" id="ttoStep3">Next — Schedule</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Drop-off / Pickup / Delivery -->
+      <div class="modal-step" id="tstep3" style="display:none;">
+        <p class="step-label">Step 3 of 4 — How do you want to bring your bike in?</p>
+
+        <div class="service-toggle three-way" role="group" aria-label="Choose service option">
+          <button type="button" class="service-opt active" id="tOptDropoff" data-mode="dropoff">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <strong>Drop It Off</strong>
+            <span>Bring it to 1311 Broadway, Hewlett</span>
+          </button>
+          <button type="button" class="service-opt" id="tOptPickup" data-mode="pickup">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8zM5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+            <strong>Schedule Pickup</strong>
+            <span>We come to you</span>
+          </button>
+          <button type="button" class="service-opt" id="tOptDelivery" data-mode="delivery">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>
+            <strong>Pickup &amp; Delivery</strong>
+            <span>We collect, tune &amp; return</span>
+          </button>
+        </div>
+
+        <!-- Drop-off fields -->
+        <div id="tDropoffFields" class="sub-fields">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tDropDate">Preferred Drop-Off Date <span aria-hidden="true">*</span></label>
+              <input type="date" id="tDropDate" name="tDropDate">
+              <span class="field-error" id="tDropDateErr" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label for="tDropTime">Preferred Time</label>
+              <select id="tDropTime" name="tDropTime">
+                <option value="">Any time is fine</option>
+                <option>10:00 AM – 12:00 PM</option>
+                <option>12:00 PM – 2:00 PM</option>
+                <option>2:00 PM – 4:00 PM</option>
+                <option>4:00 PM – 6:00 PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="info-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            Walk-ins are always welcome — selecting a date helps us prepare for your visit.
+          </div>
+        </div>
+
+        <!-- Pickup fields -->
+        <div id="tPickupFields" class="sub-fields" style="display:none;">
+          <div class="form-group">
+            <label for="tPickupAddr">Your Pickup Address <span aria-hidden="true">*</span></label>
+            <input type="text" id="tPickupAddr" name="tPickupAddr" placeholder="123 Your Street, Hewlett, NY">
+            <span class="field-error" id="tPickupAddrErr" role="alert"></span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tPickupDate">Pickup Date <span aria-hidden="true">*</span></label>
+              <input type="date" id="tPickupDate" name="tPickupDate">
+              <span class="field-error" id="tPickupDateErr" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label for="tPickupTime">Pickup Time Window <span aria-hidden="true">*</span></label>
+              <select id="tPickupTime" name="tPickupTime">
+                <option value="">Select a window</option>
+                <option>10:00 AM – 12:00 PM</option>
+                <option>12:00 PM – 2:00 PM</option>
+                <option>2:00 PM – 4:00 PM</option>
+                <option>4:00 PM – 6:00 PM</option>
+              </select>
+              <span class="field-error" id="tPickupTimeErr" role="alert"></span>
+            </div>
+          </div>
+          <div class="info-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            Pickup available within 10 miles of Hewlett. We'll confirm availability when we review your booking.
+          </div>
+        </div>
+
+        <!-- Pickup & Delivery fields -->
+        <div id="tDeliveryFields" class="sub-fields" style="display:none;">
+          <div class="form-group">
+            <label for="tDeliveryAddr">Collection &amp; Return Address <span aria-hidden="true">*</span></label>
+            <input type="text" id="tDeliveryAddr" name="tDeliveryAddr" placeholder="123 Your Street, Hewlett, NY">
+            <span class="field-error" id="tDeliveryAddrErr" role="alert"></span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tDeliveryDate">Preferred Collection Date <span aria-hidden="true">*</span></label>
+              <input type="date" id="tDeliveryDate" name="tDeliveryDate">
+              <span class="field-error" id="tDeliveryDateErr" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label for="tDeliveryTime">Collection Time Window <span aria-hidden="true">*</span></label>
+              <select id="tDeliveryTime" name="tDeliveryTime">
+                <option value="">Select a window</option>
+                <option>10:00 AM – 12:00 PM</option>
+                <option>12:00 PM – 2:00 PM</option>
+                <option>2:00 PM – 4:00 PM</option>
+                <option>4:00 PM – 6:00 PM</option>
+              </select>
+              <span class="field-error" id="tDeliveryTimeErr" role="alert"></span>
+            </div>
+          </div>
+          <div class="info-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            We collect, complete your tune-up, and return the bike — typically within 2 business days. Available within 10 miles of Hewlett.
+          </div>
+        </div>
+
+        <div class="modal-nav">
+          <button type="button" class="btn btn-outline-navy" id="tbackToStep2">← Back</button>
+          <button type="button" class="btn btn-primary" id="ttoStep4">Next — Payment</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Payment -->
+      <div class="modal-step" id="tstep4" style="display:none;">
+        <p class="step-label">Step 4 of 4 — Payment Details</p>
+
+        <!-- Order summary -->
+        <div class="order-summary" id="tuneupOrderSummary">
+          <div class="order-summary-row">
+            <span id="summaryTierName">Basic Tune-Up</span>
+            <span id="summaryTierPrice">$49</span>
+          </div>
+          <div class="order-summary-row muted" id="summaryServiceRow">
+            <span id="summaryServiceLabel">Drop-off at shop</span>
+            <span>Included</span>
+          </div>
+          <div class="order-summary-divider"></div>
+          <div class="order-summary-row total">
+            <span>Total Due Today</span>
+            <span id="summaryTotal">$49</span>
+          </div>
+          <p class="order-note">A deposit holds your booking. Final balance due at pickup or delivery.</p>
+        </div>
+
+        <!-- Payment method -->
+        <div class="form-group" style="margin-top:1.25rem;">
+          <label>Payment Method <span aria-hidden="true">*</span></label>
+          <div class="pay-opts" role="group" aria-label="Select payment method">
+            <button type="button" class="pay-opt active" id="payCard" data-pay="card">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Credit / Debit Card
+            </button>
+            <button type="button" class="pay-opt" id="payPaypal" data-pay="paypal">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 11l-1 9M7 11c0-4 2-6 6-6h3c2 0 3.5 1 3.5 3s-1 3-3 3H9"/><path d="M9 11c0 4-1 7-4 9"/></svg>
+              PayPal
+            </button>
+            <button type="button" class="pay-opt" id="payInStore" data-pay="instore">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+              Pay In-Store
+            </button>
+          </div>
+        </div>
+
+        <!-- Card fields -->
+        <div id="cardFields" class="sub-fields">
+          <div class="form-group">
+            <label for="tCardName">Name on Card <span aria-hidden="true">*</span></label>
+            <input type="text" id="tCardName" name="tCardName" autocomplete="cc-name" placeholder="Maria Santos">
+            <span class="field-error" id="tCardNameErr" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label for="tCardNumber">Card Number <span aria-hidden="true">*</span></label>
+            <div class="card-input-wrap">
+              <input type="text" id="tCardNumber" name="tCardNumber" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric">
+              <div class="card-icons" aria-hidden="true">
+                <svg width="32" height="20" viewBox="0 0 32 20"><rect width="32" height="20" rx="3" fill="#1A1F71"/><rect x="0" y="7" width="32" height="6" fill="#F7B600"/></svg>
+                <svg width="32" height="20" viewBox="0 0 32 20"><rect width="32" height="20" rx="3" fill="#252525"/><circle cx="12" cy="10" r="7" fill="#EB001B"/><circle cx="20" cy="10" r="7" fill="#F79E1B"/><path d="M16 5.3a7 7 0 0 1 0 9.4A7 7 0 0 1 16 5.3z" fill="#FF5F00"/></svg>
+              </div>
+            </div>
+            <span class="field-error" id="tCardNumberErr" role="alert"></span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tCardExpiry">Expiry Date <span aria-hidden="true">*</span></label>
+              <input type="text" id="tCardExpiry" name="tCardExpiry" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" inputmode="numeric">
+              <span class="field-error" id="tCardExpiryErr" role="alert"></span>
+            </div>
+            <div class="form-group">
+              <label for="tCardCVV">CVV <span aria-hidden="true">*</span></label>
+              <input type="text" id="tCardCVV" name="tCardCVV" autocomplete="cc-csc" placeholder="123" maxlength="4" inputmode="numeric">
+              <span class="field-error" id="tCardCVVErr" role="alert"></span>
+            </div>
+          </div>
+          <div class="secure-badge" aria-label="Payments are secure and encrypted">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Secured with 256-bit SSL encryption
+          </div>
+        </div>
+
+        <!-- PayPal placeholder -->
+        <div id="paypalFields" class="sub-fields" style="display:none;">
+          <div class="paypal-placeholder">
+            <svg width="80" height="24" viewBox="0 0 80 24" fill="none" aria-hidden="true"><text x="0" y="18" font-family="Arial Black, sans-serif" font-size="18" font-weight="900" fill="#003087">Pay</text><text x="30" y="18" font-family="Arial Black, sans-serif" font-size="18" font-weight="900" fill="#009cde">Pal</text></svg>
+            <p>You'll be redirected to PayPal to complete payment securely after confirming your booking.</p>
+          </div>
+        </div>
+
+        <!-- In-store placeholder -->
+        <div id="inStoreFields" class="sub-fields" style="display:none;">
+          <div class="info-box" style="margin-top:0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            No payment needed now. You can pay by cash, card, or check when you drop off or collect your bike. We accept Visa, Mastercard, and Amex in-store.
+          </div>
+        </div>
+
+        <div class="modal-nav">
+          <button type="button" class="btn btn-outline-navy" id="tbackToStep3">← Back</button>
+          <button type="submit" class="btn btn-primary" id="tSubmitBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            Confirm My Booking
+          </button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="modal-step modal-success" id="tstepSuccess" style="display:none;">
+        <div class="success-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
+        </div>
+        <h3 id="tuneupSuccessName">You're all booked!</h3>
+        <p>A confirmation email is on its way. See you soon at South Shore Bicycle &amp; Fitness.</p>
+        <div class="success-summary" id="tuneupSuccessSummary"></div>
+        <button type="button" class="btn btn-primary" id="tuneupCloseSuccess">Close</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<style>
+/* ===== TUNE-UP MODAL SPECIFIC STYLES ===== */
+
+/* Tier cards */
+.tier-cards {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.tier-card {
+  width: 100%;
+  text-align: left;
+  background: var(--sand);
+  border: 2px solid var(--sand-dark);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  cursor: pointer;
+  font-family: var(--body);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+.tier-card:hover { border-color: var(--navy); transform: translateY(-1px); }
+.tier-card.active {
+  background: #fff;
+  border-color: var(--coral-dark);
+  box-shadow: 0 4px 16px rgba(204,0,0,0.12);
+}
+
+.tier-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+.tier-badge {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--display);
+  font-size: 0.95rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+.tier-badge.popular::after {
+  content: 'Popular';
+  position: absolute;
+  top: -8px; right: -36px;
+  background: var(--coral-dark);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+.tier-card.active .tier-badge { background: var(--coral-dark); }
+.tier-info { flex: 1; }
+.tier-info strong { display: block; font-weight: 800; color: var(--navy); font-size: 1rem; }
+.tier-info span { font-size: 0.83rem; color: var(--ink-soft); }
+.tier-price-tag {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  color: var(--navy);
+  flex-shrink: 0;
+}
+.tier-card.active .tier-price-tag { color: var(--coral-dark); }
+
+.tier-includes {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--sand-dark);
+}
+.tier-includes li {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  padding-left: 1rem;
+  position: relative;
+}
+.tier-includes li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--seafoam);
+  font-weight: 700;
+}
+
+/* Three-way toggle */
+.service-toggle.three-way {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 520px) {
+  .service-toggle.three-way { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* Payment options */
+.pay-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+.pay-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border: 2px solid var(--sand-dark);
+  border-radius: 10px;
+  background: var(--sand);
+  font-family: var(--body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  min-height: 44px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.pay-opt:hover { border-color: var(--navy); }
+.pay-opt.active {
+  border-color: var(--coral-dark);
+  background: #fff;
+  color: var(--coral-dark);
+}
+.pay-opt svg { flex-shrink: 0; }
+
+/* Card input */
+.card-input-wrap {
+  position: relative;
+}
+.card-input-wrap input {
+  padding-right: 5rem;
+}
+.card-icons {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  pointer-events: none;
+}
+
+.secure-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 0.5rem;
+}
+.secure-badge svg { color: var(--seafoam); }
+
+/* PayPal placeholder */
+.paypal-placeholder {
+  background: var(--sand);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+.paypal-placeholder p {
+  font-size: 0.88rem;
+  margin-top: 0.75rem;
+  max-width: 32ch;
+  margin-inline: auto;
+}
+
+/* Order summary */
+.order-summary {
+  background: var(--sand);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+.order-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--navy);
+  padding: 0.35rem 0;
+}
+.order-summary-row.muted { font-weight: 500; color: var(--ink-soft); font-size: 0.88rem; }
+.order-summary-row.total { font-size: 1.1rem; padding-top: 0.6rem; }
+.order-summary-divider { border: none; border-top: 1px solid var(--sand-dark); margin: 0.4rem 0; }
+.order-note {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--sand-dark);
+  padding-top: 0.5rem;
+}
+</style>
+
+<script>
+// ===== TUNE-UP MODAL LOGIC =====
+(function() {
+  const modal    = document.getElementById('tuneupModal');
+  const backdrop = document.getElementById('tuneupBackdrop');
+  const closeBtn = document.getElementById('tuneupClose');
+  const progress = document.getElementById('tuneupProgressFill');
+
+  const tierPrices = ['$49','$89','$179'];
+  const tierNames  = ['Basic Tune-Up','Standard Tune-Up','Full Overhaul'];
+  let selectedTier = 0;
+  let tServiceMode = 'dropoff';
+  let tPayMode     = 'card';
+
+  // Open from any .open-tuneup-modal trigger
+  document.querySelectorAll('.open-tuneup-modal').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openTuneupModal();
+    });
+  });
+
+  function openTuneupModal() {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTStep(1);
+    setTimeout(() => document.getElementById('tierCard0').focus(), 100);
+  }
+
+  function closeTuneupModal() {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeTuneupModal);
+  backdrop.addEventListener('click', closeTuneupModal);
+  document.getElementById('tuneupCloseSuccess').addEventListener('click', closeTuneupModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display !== 'none') closeTuneupModal();
+  });
+
+  // Set min date
+  const today = new Date().toISOString().split('T')[0];
+  ['tDropDate','tPickupDate','tDeliveryDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.min = today;
+  });
+
+  // Step management
+  function setTStep(n) {
+    ['tstep1','tstep2','tstep3','tstep4','tstepSuccess'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    if (n === 'success') {
+      document.getElementById('tstepSuccess').style.display = 'block';
+      progress.style.width = '100%';
+    } else {
+      document.getElementById('tstep' + n).style.display = 'block';
+      progress.style.width = (n * 25) + '%';
+    }
+  }
+
+  // Tier selection
+  document.querySelectorAll('.tier-card').forEach((card, i) => {
+    card.addEventListener('click', () => {
+      selectedTier = i;
+      document.querySelectorAll('.tier-card').forEach((c, j) => {
+        c.classList.toggle('active', j === i);
+      });
+    });
+  });
+
+  // Service mode toggle (drop-off / pickup / delivery)
+  const tOptDropoff  = document.getElementById('tOptDropoff');
+  const tOptPickup   = document.getElementById('tOptPickup');
+  const tOptDelivery = document.getElementById('tOptDelivery');
+
+  function setServiceMode(mode) {
+    tServiceMode = mode;
+    [tOptDropoff, tOptPickup, tOptDelivery].forEach(b => b.classList.remove('active'));
+    document.getElementById('tDropoffFields').style.display  = 'none';
+    document.getElementById('tPickupFields').style.display   = 'none';
+    document.getElementById('tDeliveryFields').style.display = 'none';
+    if (mode === 'dropoff') {
+      tOptDropoff.classList.add('active');
+      document.getElementById('tDropoffFields').style.display = 'block';
+    } else if (mode === 'pickup') {
+      tOptPickup.classList.add('active');
+      document.getElementById('tPickupFields').style.display = 'block';
+    } else {
+      tOptDelivery.classList.add('active');
+      document.getElementById('tDeliveryFields').style.display = 'block';
+    }
+    // Update order summary service label
+    const labels = { dropoff: 'Drop-off at shop', pickup: 'Pickup service', delivery: 'Pickup & Delivery' };
+    document.getElementById('summaryServiceLabel').textContent = labels[mode];
+  }
+
+  tOptDropoff.addEventListener('click',  () => setServiceMode('dropoff'));
+  tOptPickup.addEventListener('click',   () => setServiceMode('pickup'));
+  tOptDelivery.addEventListener('click', () => setServiceMode('delivery'));
+
+  // Payment mode toggle
+  function setPayMode(mode) {
+    tPayMode = mode;
+    ['payCard','payPaypal','payInStore'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('cardFields').style.display    = 'none';
+    document.getElementById('paypalFields').style.display  = 'none';
+    document.getElementById('inStoreFields').style.display = 'none';
+    if (mode === 'card') {
+      document.getElementById('payCard').classList.add('active');
+      document.getElementById('cardFields').style.display = 'block';
+    } else if (mode === 'paypal') {
+      document.getElementById('payPaypal').classList.add('active');
+      document.getElementById('paypalFields').style.display = 'block';
+    } else {
+      document.getElementById('payInStore').classList.add('active');
+      document.getElementById('inStoreFields').style.display = 'block';
+    }
+  }
+
+  document.getElementById('payCard').addEventListener('click',    () => setPayMode('card'));
+  document.getElementById('payPaypal').addEventListener('click',  () => setPayMode('paypal'));
+  document.getElementById('payInStore').addEventListener('click', () => setPayMode('instore'));
+
+  // Card number formatting
+  document.getElementById('tCardNumber').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'').substring(0,16);
+    this.value = v.replace(/(.{4})/g,'$1 ').trim();
+  });
+  // Expiry formatting
+  document.getElementById('tCardExpiry').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2);
+    this.value = v;
+  });
+
+  // Update order summary on step 4
+  function updateOrderSummary() {
+    document.getElementById('summaryTierName').textContent  = tierNames[selectedTier];
+    document.getElementById('summaryTierPrice').textContent = tierPrices[selectedTier];
+    document.getElementById('summaryTotal').textContent     = tierPrices[selectedTier];
+  }
+
+  // Validation helpers
+  function tShowErr(inputId, errId, msg) {
+    const el = document.getElementById(inputId);
+    const err = document.getElementById(errId);
+    if (el) el.classList.add('error');
+    if (err) err.textContent = msg;
+    return false;
+  }
+  function tClearErr(inputId, errId) {
+    const el = document.getElementById(inputId);
+    const err = document.getElementById(errId);
+    if (el) el.classList.remove('error');
+    if (err) err.textContent = '';
+  }
+
+  // Step 1 → 2
+  document.getElementById('ttoStep2').addEventListener('click', () => {
+    setTStep(2);
+    setTimeout(() => document.getElementById('tFirstName').focus(), 50);
+  });
+
+  // Step 2 → 3
+  document.getElementById('ttoStep3').addEventListener('click', () => {
+    let valid = true;
+    ['tFirstName','tLastName','tEmail','tPhone'].forEach(f => tClearErr(f, f+'Err'));
+    if (!document.getElementById('tFirstName').value.trim()) valid = tShowErr('tFirstName','tFirstNameErr','Please enter your first name.');
+    if (!document.getElementById('tLastName').value.trim())  valid = tShowErr('tLastName','tLastNameErr','Please enter your last name.');
+    const email = document.getElementById('tEmail').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) valid = tShowErr('tEmail','tEmailErr','Enter a valid email address.');
+    const phone = document.getElementById('tPhone').value.trim();
+    if (!phone || phone.replace(/\D/g,'').length < 10) valid = tShowErr('tPhone','tPhoneErr','Enter a valid 10-digit phone number.');
+    if (valid) { setTStep(3); setServiceMode('dropoff'); }
+  });
+
+  // Step 3 → 4
+  document.getElementById('ttoStep4').addEventListener('click', () => {
+    let valid = true;
+    if (tServiceMode === 'dropoff') {
+      tClearErr('tDropDate','tDropDateErr');
+      if (!document.getElementById('tDropDate').value) valid = tShowErr('tDropDate','tDropDateErr','Please select a preferred date.');
+    } else if (tServiceMode === 'pickup') {
+      ['tPickupAddr','tPickupDate','tPickupTime'].forEach(f => tClearErr(f, f+'Err'));
+      if (!document.getElementById('tPickupAddr').value.trim()) valid = tShowErr('tPickupAddr','tPickupAddrErr','Please enter your pickup address.');
+      if (!document.getElementById('tPickupDate').value) valid = tShowErr('tPickupDate','tPickupDateErr','Please select a pickup date.');
+      if (!document.getElementById('tPickupTime').value) valid = tShowErr('tPickupTime','tPickupTimeErr','Please select a time window.');
+    } else {
+      ['tDeliveryAddr','tDeliveryDate','tDeliveryTime'].forEach(f => tClearErr(f, f+'Err'));
+      if (!document.getElementById('tDeliveryAddr').value.trim()) valid = tShowErr('tDeliveryAddr','tDeliveryAddrErr','Please enter your collection address.');
+      if (!document.getElementById('tDeliveryDate').value) valid = tShowErr('tDeliveryDate','tDeliveryDateErr','Please select a collection date.');
+      if (!document.getElementById('tDeliveryTime').value) valid = tShowErr('tDeliveryTime','tDeliveryTimeErr','Please select a time window.');
+    }
+    if (valid) { updateOrderSummary(); setPayMode('card'); setTStep(4); }
+  });
+
+  // Back buttons
+  document.getElementById('tbackToStep1').addEventListener('click', () => setTStep(1));
+  document.getElementById('tbackToStep2').addEventListener('click', () => setTStep(2));
+  document.getElementById('tbackToStep3').addEventListener('click', () => setTStep(3));
+
+  // Submit
+  document.getElementById('tuneupForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    if (tPayMode === 'card') {
+      ['tCardName','tCardNumber','tCardExpiry','tCardCVV'].forEach(f => tClearErr(f, f+'Err'));
+      if (!document.getElementById('tCardName').value.trim()) valid = tShowErr('tCardName','tCardNameErr','Please enter the name on your card.');
+      const num = document.getElementById('tCardNumber').value.replace(/\s/g,'');
+      if (!num || num.length < 15) valid = tShowErr('tCardNumber','tCardNumberErr','Please enter a valid card number.');
+      const exp = document.getElementById('tCardExpiry').value.replace(/\s/g,'');
+      if (!exp || exp.length < 4) valid = tShowErr('tCardExpiry','tCardExpiryErr','Enter expiry as MM / YY.');
+      const cvv = document.getElementById('tCardCVV').value.trim();
+      if (!cvv || cvv.length < 3) valid = tShowErr('tCardCVV','tCardCVVErr','Enter your 3–4 digit CVV.');
+    }
+
+    if (!valid) return;
+
+    // Build success summary
+    const firstName = document.getElementById('tFirstName').value;
+    const lastName  = document.getElementById('tLastName').value;
+    const serviceModeLabels = { dropoff: 'Drop-off at 1311 Broadway, Hewlett', pickup: 'Pickup from ' + (document.getElementById('tPickupAddr').value || '—'), delivery: 'Pickup & Delivery to/from ' + (document.getElementById('tDeliveryAddr').value || '—') };
+    const dateVal = tServiceMode === 'dropoff' ? document.getElementById('tDropDate').value : tServiceMode === 'pickup' ? document.getElementById('tPickupDate').value : document.getElementById('tDeliveryDate').value;
+    const timeVal = tServiceMode === 'dropoff' ? (document.getElementById('tDropTime').value || 'Flexible') : tServiceMode === 'pickup' ? document.getElementById('tPickupTime').value : document.getElementById('tDeliveryTime').value;
+    const payLabels = { card: 'Credit/Debit Card', paypal: 'PayPal', instore: 'Pay In-Store' };
+
+    document.getElementById('tuneupSuccessName').textContent = 'You\'re booked, ' + firstName + '!';
+    document.getElementById('tuneupSuccessSummary').innerHTML = `
+      <div><strong>Name:</strong> ${firstName} ${lastName}</div>
+      <div><strong>Service:</strong> ${tierNames[selectedTier]} — ${tierPrices[selectedTier]}</div>
+      <div><strong>Appointment:</strong> ${serviceModeLabels[tServiceMode]}</div>
+      <div><strong>Date:</strong> ${dateVal}</div>
+      <div><strong>Time:</strong> ${timeVal}</div>
+      <div><strong>Payment:</strong> ${payLabels[tPayMode]}</div>
+    `;
+
+    setTStep('success');
   });
 })();
 </script>
