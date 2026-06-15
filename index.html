@@ -145,6 +145,7 @@
     justify-content: space-between;
     padding: var(--space-3) 0;
     transition: padding 0.25s ease;
+    gap: 0;
   }
 
   header.shrink .nav-wrap {
@@ -163,6 +164,27 @@
   }
   .logo svg { flex-shrink: 0; width: 38px; height: 38px; transition: width 0.25s ease, height 0.25s ease; }
   header.shrink .logo svg { width: 30px; height: 30px; }
+
+  .header-brand-name {
+    font-family: Impact, 'Arial Narrow', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    font-style: normal;
+    color: #CC0000;
+    letter-spacing: 0.08em;
+    word-spacing: 0.15em;
+    white-space: nowrap;
+    flex: 1;
+    padding-left: var(--space-3);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+    transition: font-size 0.25s ease;
+  }
+  header.shrink .header-brand-name {
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  }
+  @media (max-width: 860px) {
+    .header-brand-name { display: none; }
+  }
 
   nav ul {
     display: flex;
@@ -812,6 +834,8 @@
     <a href="#top" class="logo" aria-label="South Shore Bicycle and Fitness home">
       <img src="logo.png" alt="South Shore Bicycle and Fitness logo" width="160" height="96" style="height:64px;width:auto;object-fit:contain;">
     </a>
+
+    <span class="header-brand-name" aria-hidden="true">South Shore</span>
 
     <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle menu">
       <span></span><span></span><span></span>
