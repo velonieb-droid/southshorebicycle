@@ -367,10 +367,52 @@
   /* Hero visual: bike gear illustration */
   .hero-visual {
     position: relative;
-    aspect-ratio: 4/3;
     width: 100%;
   }
-  .hero-visual svg { width: 100%; height: 100%; }
+
+  .hero-logo-card {
+    position: relative;
+    background: linear-gradient(160deg, #15303E 0%, #1C3A4B 100%);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+
+  /* Subtle glow circle behind logo */
+  .hero-logo-card::before {
+    content: '';
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: #2C5470;
+    opacity: 0.5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .hero-card-logo {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 20px rgba(0,0,0,0.4));
+  }
+
+  .hero-gear-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+  }
 
   /* ===== SECTION HEADERS ===== */
   .section { padding: var(--space-6) 0; }
@@ -797,13 +839,6 @@
   <section class="hero" id="top">
     <div class="container hero-grid">
       <div>
-        <img
-          src="logo.png"
-          alt="South Shore Bicycle and Fitness"
-          width="280"
-          height="168"
-          class="hero-logo"
-        >
         <span class="hero-eyebrow">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4.5L6 21l1.5-7.5L2 9h7z"/></svg>
           South Shore's Local Bike &amp; Fitness Shop
@@ -824,46 +859,26 @@
         </div>
       </div>
 
-      <div class="hero-visual" aria-hidden="true">
-        <svg viewBox="0 0 480 360" width="480" height="360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Illustration of a road bicycle with a gear dial highlight">
-          <rect width="480" height="360" rx="24" fill="#15303E"/>
-          <circle cx="240" cy="180" r="150" fill="#2C5470" opacity="0.5"/>
-          <!-- wheels -->
-          <circle cx="140" cy="240" r="62" fill="none" stroke="#F5F0E8" stroke-width="6"/>
-          <circle cx="140" cy="240" r="6" fill="#FF6B4A"/>
-          <circle cx="340" cy="240" r="62" fill="none" stroke="#F5F0E8" stroke-width="6"/>
-          <circle cx="340" cy="240" r="6" fill="#FF6B4A"/>
-          <!-- spokes -->
-          <g stroke="#F5F0E8" stroke-width="2" opacity="0.6">
-            <line x1="140" y1="178" x2="140" y2="302"/>
-            <line x1="78" y1="240" x2="202" y2="240"/>
-            <line x1="98" y1="198" x2="182" y2="282"/>
-            <line x1="98" y1="282" x2="182" y2="198"/>
-            <line x1="340" y1="178" x2="340" y2="302"/>
-            <line x1="278" y1="240" x2="402" y2="240"/>
-            <line x1="298" y1="198" x2="382" y2="282"/>
-            <line x1="298" y1="282" x2="382" y2="198"/>
-          </g>
-          <!-- frame -->
-          <g stroke="#FF6B4A" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M140 240 L230 240 L260 150 L210 150"/>
-            <path d="M230 240 L340 240"/>
-            <path d="M260 150 L340 240"/>
-            <path d="M210 150 L185 240"/>
-          </g>
-          <!-- seat post + handlebar -->
-          <g stroke="#7FB8A4" stroke-width="7" fill="none" stroke-linecap="round">
-            <line x1="230" y1="240" x2="245" y2="140"/>
-            <line x1="245" y1="140" x2="270" y2="135"/>
-            <line x1="210" y1="150" x2="195" y2="118"/>
-            <line x1="180" y1="115" x2="210" y2="120"/>
-          </g>
-          <!-- gear dial signature -->
-          <circle cx="380" cy="90" r="46" fill="#1C3A4B" stroke="#FF6B4A" stroke-width="3"/>
-          <circle cx="380" cy="90" r="34" fill="none" stroke="#7FB8A4" stroke-width="3" stroke-dasharray="6 5"/>
-          <text x="380" y="84" text-anchor="middle" fill="#FFFFFF" font-family="Archivo Black, sans-serif" font-size="22">3</text>
-          <text x="380" y="104" text-anchor="middle" fill="#7FB8A4" font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="1">GEAR</text>
-        </svg>
+      <div class="hero-visual">
+        <div class="hero-logo-card">
+          <!-- Gear dial badge -->
+          <div class="hero-gear-badge" aria-hidden="true">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="38" fill="#1C3A4B" stroke="#CC0000" stroke-width="3"/>
+              <circle cx="40" cy="40" r="28" fill="none" stroke="#7FB8A4" stroke-width="2.5" stroke-dasharray="5 4"/>
+              <text x="40" y="36" text-anchor="middle" fill="#FFFFFF" font-family="Archivo Black, sans-serif" font-size="18" font-weight="900">3</text>
+              <text x="40" y="52" text-anchor="middle" fill="#7FB8A4" font-family="Inter, sans-serif" font-size="9" font-weight="700" letter-spacing="1">GEAR</text>
+            </svg>
+          </div>
+          <!-- Logo centered in card -->
+          <img
+            src="logo.png"
+            alt="South Shore Bicycle and Fitness"
+            width="360"
+            height="220"
+            class="hero-card-logo"
+          >
+        </div>
       </div>
     </div>
   </section>
